@@ -15,4 +15,5 @@
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/item_movie" />
+
 </android.support.v4.widget.SwipeRefreshLayout>

@@ -1,6 +1,8 @@
 package com.appnd.moviesapp.ui.base;
 
 
+import android.support.annotation.StringRes;
+
 public interface BaseContract {
     /**
      * Interface that defines all the procedures/functions all presenters must implement
@@ -19,6 +21,7 @@ public interface BaseContract {
     /**
      * Interface that defines all the procedures/functions all views must implement
      */
-    public interface View {
+    interface View {
+        void showError(@StringRes int error);
     }
 }

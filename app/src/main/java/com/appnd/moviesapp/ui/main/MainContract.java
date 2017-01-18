@@ -16,7 +16,7 @@ public interface MainContract {
 
         void addItems(List<Movie> items);
 
-        void showItems(List<Movie> items);
+        void clearItems();
     }
 
     interface Presenter extends BaseContract.Presenter<View> {

@@ -2,6 +2,8 @@ package com.appnd.moviesapp;
 
 import android.app.Application;
 
+import butterknife.ButterKnife;
+
 public class MovieApplication extends Application {
 
     private AppComponent mAppComponent;
