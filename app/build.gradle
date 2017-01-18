@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 25
@@ -25,9 +26,29 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    //support libraries
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:cardview-v7:25.1.0'
+
+    //retrofit - Http requests
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+
+    // Glide - Images
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+
+    //RxJava & RxAndroid
+    compile 'io.reactivex:rxjava:1.2.3'
+    compile 'io.reactivex:rxandroid:1.2.1'
+
+    //Butterknife - View binding
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    //Dagger - Dependency Injector
+    compile 'com.google.dagger:dagger:2.8'
+    apt 'com.google.dagger:dagger-compiler:2.8'
 
     testCompile 'junit:junit:4.12'
 }
