@@ -1,12 +1,13 @@
 package com.appnd.moviesapp.ui.main;
 
-import android.os.Build;
-
 import com.appnd.moviesapp.BuildConfig;
+import com.appnd.moviesapp.R;
 import com.appnd.moviesapp.api.dto.MovieList;
 import com.appnd.moviesapp.api.service.MovieService;
 import com.appnd.moviesapp.ui.base.BasePresenter;
 import com.appnd.moviesapp.util.Constants;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -25,7 +26,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
         super(mView);
 
         mMovieService = movieService;
-        pagesLoaded = 0;
+        pagesLoaded = 1;
     }
 
     @Override
@@ -41,19 +42,27 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
                     @Override
                     public void onError(Throwable e) {
-
+                        if (e instanceof IOException)
+                            mView.showError(R.string.error_network);
+                        else
+                            mView.showError(R.string.error_unknown);
                     }
 
                     @Override
                     public void onNext(MovieList movieList) {
-                        mView.showItems(movieList.getResults());
+                        pagesLoaded++;
+                        mView.addItems(movieList.getResults());
+                        mView.hideLoading();
                     }
                 });
     }
 
     @Override
     public void refresh() {
-        pagesLoaded = 0;
+        mView.showLoading();
+        mView.clearItems();
+        pagesLoaded = 1;
+
         fetchMoreItems();
     }
 }
