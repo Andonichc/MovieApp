@@ -31,7 +31,7 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void fetchMoreItems() {
-        mMovieService.findMovieList(Constants.LIST_ID, pagesLoaded, BuildConfig.API_KEY)
+        mMovieService.findMovieList(pagesLoaded, BuildConfig.API_KEY)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<MovieList>() {
