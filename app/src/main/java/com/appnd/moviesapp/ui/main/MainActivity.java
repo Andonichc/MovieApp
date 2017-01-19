@@ -1,12 +1,16 @@
 package com.appnd.moviesapp.ui.main;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.appnd.moviesapp.AppComponent;
 import com.appnd.moviesapp.MovieApplication;
@@ -16,6 +20,7 @@ import com.appnd.moviesapp.api.DaggerApiComponent;
 import com.appnd.moviesapp.api.dto.Movie;
 import com.appnd.moviesapp.ui.base.BaseActivity;
 import com.appnd.moviesapp.util.EndlessRecyclerViewScrollListener;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
 
@@ -25,13 +30,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity
-        implements MainContract.View, SwipeRefreshLayout.OnRefreshListener {
+        implements MainContract.View,
+        SwipeRefreshLayout.OnRefreshListener,
+        MaterialSearchView.OnQueryTextListener {
 
     @BindView(R.id.swipe_refresh_main)
     SwipeRefreshLayout mSwipeRefresh;
 
     @BindView(R.id.recycler_view_main)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.search_view_main)
+    MaterialSearchView mSearchView;
 
     @Inject
     MainPresenter mPresenter;
@@ -52,28 +62,22 @@ public class MainActivity extends BaseActivity
 
         inject();
 
+        mSearchView.setOnQueryTextListener(this);
+
         mAdapter = new MoviesAdapter();
         setUpRecyclerView();
 
         mPresenter.fetchMoreItems();
     }
 
-    private void setUpRecyclerView() {
-        LinearLayoutManager lManager = new LinearLayoutManager(this);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
 
-        mRecyclerView.setLayoutManager(lManager);
-        mRecyclerView.setAdapter(mAdapter);
-
-        mScrollListener = new EndlessRecyclerViewScrollListener(lManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                mPresenter.fetchMoreItems();
-            }
-        };
-
-        mRecyclerView.addOnScrollListener(mScrollListener);
-
-        mSwipeRefresh.setOnRefreshListener(this);
+        MenuItem searchItem = menu.findItem(R.id.search_action);
+        mSearchView.setMenuItem(searchItem);
+        return true;
     }
 
     @Override
@@ -105,6 +109,35 @@ public class MainActivity extends BaseActivity
     public void onRefresh() {
         mPresenter.refresh();
         mScrollListener.restart();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mPresenter.search(newText);
+        return true;
+    }
+
+    private void setUpRecyclerView() {
+        LinearLayoutManager lManager = new LinearLayoutManager(this);
+
+        mRecyclerView.setLayoutManager(lManager);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mScrollListener = new EndlessRecyclerViewScrollListener(lManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                mPresenter.fetchMoreItems();
+            }
+        };
+
+        mRecyclerView.addOnScrollListener(mScrollListener);
+
+        mSwipeRefresh.setOnRefreshListener(this);
     }
 
     private void inject() {

@@ -12,4 +12,8 @@ public interface MovieService {
     Observable<MovieList> findMovieList(@Query("page") int pageNum,
                                         @Query("api_key") String apiKey);
 
+    @GET("/3/search/movie")
+    Observable<MovieList> searchMovies(@Query("query") String searchQuery,
+                                       @Query("page") int pageNum,
+                                       @Query("api_key") String apiKey);
 }
