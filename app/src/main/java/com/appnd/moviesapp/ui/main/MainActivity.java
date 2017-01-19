@@ -48,6 +48,7 @@ public class MainActivity extends BaseActivity
     private MoviesAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mScrollListener;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +60,7 @@ public class MainActivity extends BaseActivity
         //Initialize all the views having the @BindView annotation
         ButterKnife.bind(this);
 
+        //inject all dependencies
         inject();
 
         mSearchView.setOnQueryTextListener(this);
@@ -82,11 +84,16 @@ public class MainActivity extends BaseActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
+        //attach the search menu icon with the SearchView
         MenuItem searchItem = menu.findItem(R.id.search_action);
         mSearchView.setMenuItem(searchItem);
+
         return true;
     }
 
+    /**
+     * Implementation of {@link MainContract.Presenter} methods.
+     */
     @Override
     public void showLoading() {
         mSwipeRefresh.setRefreshing(true);
@@ -112,12 +119,18 @@ public class MainActivity extends BaseActivity
         mAdapter.addItems(items);
     }
 
+    /**
+     * Implementation of {@link SwipeRefreshLayout} methods.
+     */
     @Override
     public void onRefresh() {
         mPresenter.refresh();
         mScrollListener.restart();
     }
 
+    /**
+     * Implementation of {@link MaterialSearchView.OnQueryTextListener} methods.
+     */
     @Override
     public boolean onQueryTextSubmit(String query) {
         mPresenter.search(query);
@@ -130,6 +143,13 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
+    /**
+     * Activity's own private methods
+     */
+
+    /**
+     * Sets the recyclerView and all its related objects to be used.
+     */
     private void setUpRecyclerView() {
         LinearLayoutManager lManager = new LinearLayoutManager(this);
 
@@ -148,6 +168,10 @@ public class MainActivity extends BaseActivity
         mSwipeRefresh.setOnRefreshListener(this);
     }
 
+    /**
+     * Injects all the fields of MainActivity with Dagger building the {@link MainComponent}
+     * and its dependencies.
+     */
     private void inject() {
         AppComponent appComponent = ((MovieApplication) getApplication()).getAppComponent();
         DaggerMainComponent.builder()
