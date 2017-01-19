@@ -26,6 +26,7 @@
             <com.miguelcatalan.materialsearchview.MaterialSearchView
                 android:id="@+id/search_view_main"
                 android:layout_width="match_parent"
+                android:textColorHint="@color/black_transparent"
                 android:layout_height="wrap_content"/>
 
         </FrameLayout>

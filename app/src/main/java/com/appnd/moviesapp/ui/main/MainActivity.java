@@ -1,7 +1,6 @@
 package com.appnd.moviesapp.ui.main;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -71,6 +70,14 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
+    public void onBackPressed() {
+        if (mSearchView.isSearchOpen())
+            mSearchView.closeSearch();
+        else
+            super.onBackPressed();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
@@ -113,6 +120,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        mPresenter.search(query);
         return true;
     }
 

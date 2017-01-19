@@ -8,10 +8,13 @@ import com.appnd.moviesapp.ui.base.BasePresenter;
 import com.appnd.moviesapp.util.Constants;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -22,9 +25,11 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
     private int pagesLoaded;
     private String mQuery;
 
+    private Subscription mSearchSubscriber;
+
     @Inject
-    public MainPresenter(MainContract.View mView, MovieService movieService) {
-        super(mView);
+    public MainPresenter(MainContract.View view, MovieService movieService) {
+        super(view);
 
         mMovieService = movieService;
         pagesLoaded = 1;
@@ -36,7 +41,6 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
             fetchMoreSearchItems();
         else
             fetchMoreTrendingItems();
-
     }
 
     private void fetchMoreTrendingItems(){
@@ -77,11 +81,37 @@ public class MainPresenter extends BasePresenter<MainContract.View> implements M
 
     @Override
     public void search(String query) {
-        mView.clearItems();
-        pagesLoaded = 1;
-        mQuery = query;
+        if (mSearchSubscriber != null && !mSearchSubscriber.isUnsubscribed()){
+            mSearchSubscriber.unsubscribe();
+        }
 
-        fetchMoreItems();
+        mSearchSubscriber = Observable.just(query)
+                .delay(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof IOException)
+                            mView.showError(R.string.error_network);
+                        else
+                            mView.showError(R.string.error_unknown);
+                    }
+
+                    @Override
+                    public void onNext(String query) {
+                        mView.clearItems();
+                        pagesLoaded = 1;
+                        mQuery = query;
+
+                        fetchMoreItems();
+                    }
+                });
     }
 
     private void fetchMoreSearchItems(){
