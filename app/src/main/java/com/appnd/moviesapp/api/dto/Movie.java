@@ -61,7 +61,8 @@ public class Movie {
         this.date = date;
     }
 
-    public String getYear(){
-        return date.substring(0,4);
+    public String getYear() {
+        return date != null && date.length() > 3 ?
+                date.substring(0, 4) : "";
     }
 }

@@ -23,5 +23,7 @@ public interface MainContract {
         void fetchMoreItems();
 
         void refresh();
+
+        void search(String query);
     }
 }
